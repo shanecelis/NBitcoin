@@ -23,14 +23,26 @@ namespace NBitcoin
 
 		public static bool IsIPv4(this IPAddress address)
 		{
+#if NOIPV6
+			return true;
+#else
 			return address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork ||
 #if WIN				
 				address.IsIPv4MappedToIPv6;
+
 #else
 				address.IsIPv4MappedToIPv6();
 #endif
-
+#endif // NOIPV6
 		}
+
+#if NOIPV6
+		public static IPAddress MapToIPv6(this IPAddress address)
+		{
+			// We don't have IPv6 capabilities.  We'll fake it for compatibility and hope nothing bad happens.
+			return address;
+		}
+#endif
 
 		public static bool IsRFC3927(this IPAddress address)
 		{
